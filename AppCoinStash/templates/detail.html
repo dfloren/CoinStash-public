@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block page_specific_style %}
+    <style>
+        #del_coin_button {
+            position: absolute;
+            right: 16em;
+            bottom: 0;
+            border-radius: 25px;
+            color: white;
+            background-color: #dc3545;
+        }
+        #del_coin_button:hover {
+            background-color: #c82333;
+        }
+        #csv_button {
+            position: absolute;
+            right: 9em;
+            bottom: 0;
+            border-radius: 25px;
+        }
+        #new_transaction_button {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            border-radius: 25px;
+        }
+        #new_transaction_button:hover {
+            background-color: #cccccc;
+        }
+        .delete_trans_button {
+            border-radius: 25px;
+        }
+        .delete_trans_button:hover {
+            background-color: #cccccc;
+        }
+        #new_transaction_form {
+            position: absolute;
+            right: 0;
+            border: 1px solid grey;
+            padding: 1em;
+            margin-top: 1em;
+            background-color: whitesmoke;
+            border-radius: 5px;
+        }
+        #submit_form_button {
+            border-bottom: 2px solid black;
+        }
+        #cancel_form_button {
+            position: absolute;
+            right: 1em;
+            border-bottom: 2px solid black;
+        }
+        ul.messages {
+            padding: 0;
+            list-style-type: none;
+        }
+        .buy_row {
+            color: green;
+            font-weight: bold;
+        }
+        .sell_row {
+            color: red;
+            font-weight: bold;
+        }
+        #transaction_table tbody tr:hover {
+            background-color: lightgrey;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}{{ user.username }} - {{ coin.coin_name }}{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        <ul class="messages" style="list-style-type:none;">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert {{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="row mt-5 mb-1">
+        <h3 style="text-decoration: underline;">{{ coin.coin_name }}</h3>
+    </div>
+    <div class="row">
+        <table class="table table-striped">
+            <tr>
+                <td class="py-1">Average Cost</td>
+                <td class="py-1 text-right">${{ coin.avg_cost }} CAD</td>
+            </tr>
+            <tr>
+                <td class="py-1">Total Cost</td>
+                <td class="py-1 text-right">${{ coin.total_cost }} CAD</td>
+            </tr>
+            <tr>
+                <td class="py-1">Balance</td>
+                <td class="py-1 text-right">{{ coin.balance|floatformat:5 }} {{ coin.coin_ticker.upper }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="row mt-5">
+        <div class="col pl-0">
+            <h3 style="text-decoration: underline">Transactions</h3>
+        </div>
+        <div class="col">
+            <button id="new_transaction_button" class="px-2" onclick="show_form()">New transaction</button>
+            <button id="csv_button" class="px-2" disabled>Upload CSV</button>
+            <form id="del_form" method="post" action="{% url 'AppCoinStash:del_coin' %}" hidden>
+                {% csrf_token %}
+                <input type="text" name="coin_ticker" value="{{ coin.coin_ticker }}" hidden/>
+            </form>
+            <button form="del_form" type="submit" id="del_coin_button" class="px-2">Remove coin</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" style="background-color: whitesmoke;">
+            <form id="new_transaction_form" method="post" action="{% url 'AppCoinStash:add_transaction' %}" hidden>
+                {% csrf_token %}
+                <h5>Add new transaction</h5>
+                <input type="text" name="coin_ticker" value="{{ coin.coin_ticker }}" hidden/>
+                <table id="new_form_table" class="table table-striped">
+                    <tr>
+                        <td class="text-right"><label for="datetime">Date:&nbsp;</label></td>
+                        <td><input type="datetime-local" id="datetime" name="datetime" required></td>
+                    </tr>
+                    <tr>
+                        <td class="text-right"><label for="trans_type">Transaction type:&nbsp;</label></td>
+                        <td>
+                            <select id="trans_type" name="trans_type" required>
+                                <option value=1>BUY</option>
+                                <option value=2>SELL</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right"><label for="sent_qty">Sent quantity:&nbsp;</label></td>
+                        <td><input type=number id="sent_qty" name="sent_qty" min="0" step=any required/></td>
+                    </tr>
+                    <tr>
+                        <td class="text-right"><label for="recv_qty">Received quantity:&nbsp;</label></td>
+                        <td><input type=number id="recv_qty" name="recv_qty" min="0" step=any required/></td>
+                    </tr>
+                </table>
+                <input id="submit_form_button" type="submit" class="btn btn-primary" value="Submit">
+                <button id="cancel_form_button" class="btn btn-secondary" onclick="hide_form()">Close</button>
+            </form>
+        </div>
+    </div>
+    {% if transactions %}
+        <div class="row">
+            <table id="transaction_table" class="table table-striped mt-2">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Sent</th>
+                    <th>Received</th>
+                    <th></th>
+                </tr>
+                </thead>
+                {% for tx in transactions %}
+                    <tr class="{% if tx.transaction_type == 1 %}buy_row{% else %}sell_row{% endif %}">
+                        <td class="py-1">{{ tx.transaction_date }}</td>
+                        <td class="py-1">{{ tx.sent_qty|floatformat:2|intcomma }}</td>
+                        <td class="py-1">{{ tx.received_qty|floatformat:2|intcomma }}</td>
+                        <td class="py-1 text-right">
+                            <form id="del{{ tx.id }}" method="post" action="{% url 'AppCoinStash:del_transaction' %}" hidden>
+                                {% csrf_token %}
+                                <input type="number" name="tx_id" value="{{ tx.id }}">
+                                <input type="text" name="coin_ticker" value="{{ coin.coin_ticker }}">
+                            </form>
+                            <button form="del{{ tx.id }}" class="delete_trans_button pa-1" type="submit">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% else %}
+        <p class="text-center">No transactions yet.</p>
+    {% endif %}
+    <script>
+        function show_form() {
+            set_max_date()
+            $('#new_transaction_form').removeAttr('hidden')
+        }
+        function hide_form() {
+            $('#datetime').val('')
+            $('#sent_qty').val('')
+            $('#recv_qty').val('')
+            $('#new_transaction_form').attr('hidden', '')
+        }
+        function set_max_date() {
+            $('#datetime').attr('max', new Date().toISOString().split(".")[0])
+        }
+    </script>
+{% endblock %}

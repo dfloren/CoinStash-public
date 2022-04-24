@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_specific_style %}
+    <style>
+        .row {
+            height: 65vh;
+            align-items: center;
+        }
+        h2 {
+            font-size: 60px;
+        }
+        #row1 {
+            background-image: url({% static 'AppCoinStash/images/bg5.png' %});
+            background-size: cover;
+        }
+        #row2_container {
+            background: whitesmoke;
+        }
+        #row3_container {
+            background-image: url({% static 'AppCoinStash/images/bg7.jpg' %});
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .content-center {
+            background: #eee;
+            border-radius: 5px;
+            padding: 2em;
+            text-align: center;
+            max-width: 600px;
+            border-bottom: 5px solid #4f4f4f;
+        }
+        .demo_vid {
+            border-radius: 10px;
+
+        }
+        #chart_vid {
+            box-shadow: 10px 10px 5px grey;
+        }
+        #trans_vid {
+            box-shadow: -10px 10px 5px midnightblue;
+        }
+        #get_started_btn {
+            border-radius: 15px;
+            padding: 0.5em;
+            color: white;
+            background-color: #4f4f4f;
+            border: none;
+        }
+        #get_started_btn:hover {
+            background-color: #292929;
+        }
+        .footer {
+            background-color: #292929;
+            color: whitesmoke;
+            text-align: center;
+            padding: 1em;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}CoinStash{% endblock %}
+
+{% block content-fluid %}
+    <div id="row1" class="row m-0 p-0 justify-content-center">
+        <div class="content-center">
+            <h2>Simple. Easy. Free.</h2>
+            <p>Manage your cryptocurrency investments with CoinStash.<br>
+                Thousands of coins supported by the CoinGecko API.
+                Make informed investments without getting lost in the numbers.
+            </p>
+            <a class="btn" id="get_started_btn" href="{% url 'AppCoinStash:register' %}">Get started</a>
+        </div>
+    </div>
+    <div id="row2_container" class="container-fluid">
+        <div class="container">
+            <div class="row m-0 p-0">
+                <div class="col m-0 p-0">
+                    <h2 style="text-decoration: underline">At a glance</h2>
+                    <p>
+                        CoinStash provides an overview of your investments.
+                        Quickly assess your portfolio using metrics such as average cost,
+                        total cost, and gain/loss percentage.
+                    </p>
+                </div>
+                <div class="col m-0 p-0 text-right">
+                    <video id="chart_vid" class="demo_vid" height="400" autoplay="autoplay" loop muted>
+                        <source src="{% static 'AppCoinStash/videos/chartdemo.mp4' %}" type="video/mp4" />
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="row3_container" class="container-fluid">
+        <div class="container">
+            <div class="row my-0 py-0">
+                <div class="col text-center">
+                    <video id="trans_vid" class="demo_vid" height="400" autoplay="autoplay" loop muted>
+                        <source src="{% static 'AppCoinStash/videos/transdemo.mp4' %}" type="video/mp4" />
+                    </video>
+                </div>
+                <div class="col text-right" style="color: whitesmoke;">
+                    <h2 style="text-decoration: underline;">Manage</h2>
+                    <p>
+                        CoinStash gives you complete control over your transaction
+                        history. Add or remove transactions as you see fit.
+                    </p>
+                    <p>
+                        (Coming soon) Import your trades by uploading CSV files.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>
+            CoinStash is a project by <a target="_blank" href="https://github.com/dfloren">dfloren</a>. Made with Django &#128150;
+        </p>
+            <a target="_blank" href="https://github.com/dfloren" style="color: white;"><i class="fa-brands fa-github fa-2xl"></i></a>
+    </div>
+    <script>
+        const parallax = document.getElementById("row1")
+
+        window.addEventListener("scroll", function() {
+            parallax.style.backgroundPositionY = window.scrollY * 0.4 + "px";
+        })
+    </script>
+{% endblock %}

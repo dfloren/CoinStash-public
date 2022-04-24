@@ -1,0 +1,138 @@
+html {
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: make scrollbar invisible */
+}
+
+html, body {
+    font-family: 'PT Sans', sans-serif;
+    height: 100%;
+}
+
+.navbar {
+    background-color: #292929;
+}
+
+.navbar-brand span {
+    color: white;
+}
+
+a.nav-link.btn {
+    width: 100px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+a.nav-link:hover span {
+    color: white;
+}
+
+a.nav-link span {
+    color: grey;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.btn {
+    text-decoration: none;
+    border-radius: 43px;
+}
+
+.btn-primary-outline {
+    background-color: transparent;
+    border-color: grey;
+    margin: 5px;
+}
+
+.btn-primary-outline:hover {
+    border-color: white;
+}
+
+.btn-primary-outline:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+button.custom-btn {
+    width: 100px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    background-color: #4f4f4f;
+    border-color: transparent;
+    color: white;
+}
+
+button.custom-btn:hover {
+    background-color: #292929;
+    border-color: transparent;
+    color: white;
+}
+
+.div-center {
+    width: 400px;
+    height: 400px;
+    background-color: whitesmoke;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto;
+    padding: 1em 2em;
+    border-bottom: 2px solid #4f4f4f;
+    border-radius: 10px 10px 24px 24px;
+    display: table;
+    z-index: 2;
+}
+
+.div-center-content {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.helptext {
+    color: black;
+    font-size: 0.8em;
+}
+
+.error-small {
+    color: red;
+    font-size: 0.8em;
+}
+
+.alert {
+    border-radius: 24px;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    margin-top: 1em;
+    border: 1px solid #ccc;
+}
+
+li.alert.success {
+    background-color: #d8ecdc;
+    color: darkgreen;
+}
+
+li.alert.error {
+    background-color: #ffd4dc;
+    color: darkred;
+}
+
+li.alert.warning {
+    background-color: #ffc404;
+}
+
+.red-text {
+    color: red;
+}
+
+.green-text {
+    color: green;
+}

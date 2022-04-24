@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block page_specific_style %}
+    <style>
+        body {
+            background-image: url({% static 'AppCoinStash/images/bg2.jpg' %});
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="div-center">
+        <div class="div-center-content">
+            <h3>Create account</h3>
+            <hr />
+            {{ form.non_field_errors }}
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.username.label_tag }}
+
+                    <input type="text" name="username" maxlength="150" autocomplete="username" class="form-control" id="{{ form.username.id_for_label }}" required autofocus>
+                    {% if form.username.errors %}
+                        <span class="error-small">{{ form.username.errors }}</span>
+                    {% else %}
+                        <span class="helptext">{{ form.username.help_text }}</span>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password1.label_tag }}
+                    <input type="password" name="{{ form.password1.html_name }}" autocomplete="new-password" class="form-control" id="{{ form.password1.id_for_label }}" required>
+                    {% if form.password1.errors %}
+                        <span class="error-small">{{ form.password1.errors }}</span>
+                    {% else %}
+                        <span class="helptext">{{ form.password1.help_text }}</span>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password2.label_tag }}
+                    <input type="password" name="{{ form.password2.html_name }}" autocomplete="new-password" class="form-control" id="{{ form.password2.id_for_label }}" required>
+                    <span class="error-small">{{ form.password2.errors }}</span>
+                </div>
+                <button type="submit" class="btn custom-btn">Register</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

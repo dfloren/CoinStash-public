@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block page_specific_style %}
+    <style>
+        #result {
+            border: 1px solid #ccc;
+            padding: 3px;
+            z-index: 2;
+            border-radius: 5px;
+        }
+        #result ol {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        #result ol li {
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-bottom: 5px;
+        }
+        #result ol li:not(:last-child) {
+            border-bottom: 1px solid lightgrey;
+        }
+        #result ol li:hover {
+            background: lightgrey;
+        }
+        #submit_coin {
+            margin-left: 5px;
+        }
+        ul.messages{
+            padding: 0;
+            list-style-type: none;
+        }
+        button {
+            border-radius: 20px;
+        }
+        input {
+            border-radius: 10px;
+            background-color: whitesmoke;
+        }
+        input:focus {
+            background-color: seashell;
+        }
+        .chart-container {
+            text-align: center;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        <ul class="messages" style="list-style-type:none;">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert {{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="row" style="margin-top: 10px;">
+        <div class="col text-right">
+            <form autocomplete="off" method="post" action="https://coinstashproject.herokuapp.com/add_coin">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="new_coin">Search:</label>
+                    <input placeholder="btc, dogecoin, ..." name="new_coin" id="new_coin" oninput="searchCoinList(this.value)" onfocusout="clearSearch()" />
+                    <button id="submit_coin" type="submit" disabled>Add to portfolio</button>
+                    <div id="result" style="background-color: whitesmoke; position: absolute; text-align: left; width: 40%; right: 0;" hidden></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <h3 style="text-decoration: underline;">Portfolio</h3>
+    </div>
+    {% if coin_list %}
+        <div id="homechart_div" class="chart-container" hidden>
+            <canvas id="homeChart"></canvas>
+        </div>
+        <div class="row">
+            {% for coin in coin_list %}
+                <div class="col-4 my-4">
+                    <div class="card w-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ coin.coin_ticker.upper }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ coin.coin_name }} - ${{ coin.current_price|floatformat:2|intcomma }} CAD</h6>
+                            <h3 class="{% if coin.gain_loss >= 0 %}green-text{% else %}red-text{% endif %}" style="position: absolute; right: .7em; top: 0.5em;">{{ coin.gain_loss|floatformat:2 }}%</h3>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td class="py-1">Average Cost</td>
+                                    <td class="py-1 text-right">${{ coin.avg_cost|floatformat:2|intcomma }} CAD</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1">Total Cost</td>
+                                    <td class="py-1 text-right">${{ coin.total_cost|floatformat:2|intcomma }} CAD</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1">Balance</td>
+                                    <td class="py-1 text-right">{{ coin.balance|floatformat:5|intcomma }} {{ coin.coin_ticker.upper }}</td>
+                                </tr>
+                            </table>
+                            <a href="{% url 'AppCoinStash:detail' coin.coin_ticker %}" class="card-link">Transactions</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center" style="margin-top: 50px;">
+            <h4 style="margin-bottom: 50px;">Add coins to your portfolio using the search bar.</h4>
+            <img alt='logo.jpg' style="margin-bottom: 50px;" src="{% static 'AppCoinStash/images/logo_512px.png' %}">
+        </div>
+    {% endif %}
+    <script>
+        let search_terms = [];
+        let coin_ids = [];
+
+        function clearSearch() {
+            $('#result').attr('hidden', '');
+        }
+
+        function fill_search_input(input) {
+            $('#new_coin').val(coin_ids[input.value]);
+            $('#submit_coin').removeAttr('disabled')
+        }
+
+        function searchCoinList(input) {
+            input = input.trim()
+            $.ajax({
+                method: "GET",
+                url: "https://coinstashproject.herokuapp.com/coinsearch/?search_string=" + input
+            })
+                .done(function(coin_list) {
+                    search_terms = [];
+                    coin_ids = [];
+                    for (let i=0; i<coin_list.length; i++) {
+                        let coin = coin_list[i];
+                        search_terms.push(coin['coin_name'] + ' ($' + coin['coin_symbol'].toUpperCase() + ')');
+                        coin_ids.push(coin['coin_id']);
+                    }
+                    showResults(input);
+                });
+        }
+
+        function showResults(val) {
+            let result_div = $('#result')
+            if (val === '' || search_terms.length < 1) {
+                result_div.attr('hidden', '');
+                return
+            }
+
+            let res = document.getElementById("result");
+            res.innerHTML = '';
+            let list = '';
+            for (let i=0; i<search_terms.length; i++) {
+                list += '<li onmousedown="fill_search_input(this)" value=' + i + '>';
+                list += search_terms[i];
+                list += '</li>';
+            }
+            result_div.removeAttr('hidden')
+            res.innerHTML = '<ol>' + list + '</ol>';
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="{% static 'AppCoinStash/homechart.js' %}"></script>
+{% endblock %}
