@@ -9,10 +9,12 @@ from .models import CoinList
 # 2. Run command: python manage.py shell
 # 3. In shell, import function: from <AppName>.coin_api import update_coin_list
 # 4. In shell, run function: update_coin_list()
+# NOTE: Heroku free db has 10000 rows limit
+# TODO: Use /markets endpoint and sort by marketcap to get first 10k coins (w/ image)
 def update_coin_list():
     rqst_json = requests.get('https://api.coingecko.com/api/v3/coins/list').json()
     for coin in rqst_json:
-        if not CoinList.objects.filter(coin_id=coin['id']).exists():
+        if not CoinList.objects.filter(coin_id=coin['id']).exists() and len(CoinList.objects.all()) < 10000:
             newcoin = CoinList(coin_id=coin['id'], coin_symbol=coin['symbol'], coin_name=coin['name'])
             newcoin.save()
 
