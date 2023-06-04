@@ -64,7 +64,7 @@
     {% endif %}
     <div class="row" style="margin-top: 10px;">
         <div class="col text-right">
-            <form autocomplete="off" method="post" action="https://coinstashproject.herokuapp.com/add_coin">
+            <form autocomplete="off" method="post" action="http://127.0.0.1:8000/add_coin">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="new_coin">Search:</label>
@@ -133,7 +133,7 @@
             input = input.trim()
             $.ajax({
                 method: "GET",
-                url: "https://coinstashproject.herokuapp.com/coinsearch/?search_string=" + input
+                url: "http://127.0.0.1:8000/coinsearch/?search_string=" + input
             })
                 .done(function(coin_list) {
                     search_terms = [];

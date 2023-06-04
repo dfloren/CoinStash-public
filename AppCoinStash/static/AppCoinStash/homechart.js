@@ -27,7 +27,7 @@ function loadChart() {
 
     $.ajax({
         method: "GET",
-        url: "https://coinstashproject.herokuapp.com/chart_data"
+        url: "http://127.0.0.1:8000/chart_data"
     })
         .done(function(chart_info) {
             for (let key in chart_info) {
