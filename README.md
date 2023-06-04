@@ -1,6 +1,11 @@
 # CoinStash
 A cryptocurrency portfolio manager.
 
+Landing page:
+
+
+https://github.com/dfloren/CoinStash-public/assets/43223710/3f1b0189-b773-4dae-ae1c-5e9efb9af7de
+
 Chart demo:
 
 
