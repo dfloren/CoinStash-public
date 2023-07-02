@@ -6,15 +6,10 @@ Landing page:
 
 https://github.com/dfloren/CoinStash-public/assets/43223710/3f1b0189-b773-4dae-ae1c-5e9efb9af7de
 
-Chart demo:
+Features:
 
 
-https://user-images.githubusercontent.com/43223710/164985408-48365fb0-3761-4004-a826-d2a49c13551b.mp4
-
-Transactions demo:
-
-
-https://user-images.githubusercontent.com/43223710/164985414-e318ab6e-b9d1-4f7b-8cdb-cdc2cf2d2713.mp4
+https://github.com/dfloren/CoinStash-public/assets/43223710/fdcc691a-a314-4060-afb1-7eb1b6769e9f
 
 
 ## Running locally
